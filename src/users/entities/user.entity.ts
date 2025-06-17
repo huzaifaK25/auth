@@ -9,7 +9,7 @@ export class User {
     @Column()
     name: string;
 
-    @Column({unique: true})
+    @Column({unique: true, readonly: true})
     email: string;
 
     @Column()

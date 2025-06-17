@@ -9,6 +9,8 @@ import * as bcrypt from 'bcrypt';
 import { log } from 'node:console';
 import { Http2ServerRequest } from 'node:http2';
 import { JwtService } from '@nestjs/jwt';
+import { request } from 'express';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 // This should be a real class/interface representing a user entity
 //export type User = any;
@@ -79,10 +81,9 @@ export class UsersService {
     const isMatch = await bcrypt.compare(password, userExists.password)
     // login success response if password correct
     if (isMatch) {
+      // create JWT token for logged in user
       const payload = {username: userExists, sub: Math.floor(Math.random() * 10000)}
       const access_token = await this.jwtService.signAsync(payload)
-      
-
       return {message: 'Logged in successfully', access_token}
     }
     // login failed response if password incorrect
@@ -90,17 +91,18 @@ export class UsersService {
       
   }
 
-  async getProfile(email: string) {
-    //console.log({email});
+  async getProfile(request: any) {
+    //console.log(request.user)
+    const email = request.user.username.email;
+    
     const userExists = await this.usersRepository.findOne({where: {email}})
     if (!userExists) throw new HttpException('User not found', HttpStatus.NOT_FOUND)
-
     // removes password to display users data
     const userData = this.removePassword(userExists)
-
+    
     return {message:'Your profile:', user: userData}
   }
-
+   
   async findOne(id: number) {
     //console.log({id});
     const user = await this.usersRepository.findOne({where: {id}})
@@ -112,8 +114,22 @@ export class UsersService {
     return {message: 'User found!', userData}
   }
 
-  async updateUser(body: CreateUserDto) {
-    
+  async findWhere(occupation: string, age: number) {
+    const user = await this.usersRepository.find({where: {occupation, age}})
+    return {message: 'Users with this occupation and age', user}
+  }
+
+  async updateUser(body: UpdateUserDto, req: any) {
+    try {
+      const id = req.user.username.id
+      const userUpdate = await this.usersRepository.update({id}, body)
+      console.log(userUpdate);
+      const user = await this.usersRepository.findOne({where: {id}})
+      const updatedUser = this.removePassword(user)
+      return {message: 'User updated:', updatedUser}
+    } catch (error) {
+      throw new HttpException('Cannot change email', HttpStatus.UNAUTHORIZED)
+    }
   }
 
   async deleteUser(email: string) {
@@ -126,11 +142,10 @@ export class UsersService {
   }
 
   // removes password to display data
-  removePassword(user: User) {
+  removePassword(user: User | any) {
     // const {name: userName, email: userEmail, age: userAge, occupation: userOccupation} = user
     // const userData = {userName, userEmail, userAge, userOccupation}
     // return userData
-
     const {password, ...userData} = user;
     return userData;
   }

@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -16,21 +18,30 @@ export class UsersController {
         return this.usersService.login(body.email, body.password)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('me')
-    getProfile(@Body() body: {email: string}) {
-        return this.usersService.getProfile(body.email)
+    getProfile(@Req() req: Request) {
+        return this.usersService.getProfile(req)
     }
-
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
-    findOne(@Param() param: {id: number}) {
+    findOne(@Param('id') param: {id: number}) {
         return this.usersService.findOne(param.id)
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    findWhere(@Query('occupation') occupation: string, @Query('age') age: number) {
+        return this.usersService.findWhere(occupation, age)
+    }
+    
+    @UseGuards(JwtAuthGuard)
     @Patch('update')
-    updateUser(@Body() body: CreateUserDto) {
-        return this.usersService.updateUser(body)
+    updateUser(@Body() body: UpdateUserDto, @Req() req: Request) {
+        return this.usersService.updateUser(body, req)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete('delete') 
     deleteUser(@Body() body: {email: string}) {
         return this.usersService.deleteUser(body.email)
