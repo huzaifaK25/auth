@@ -11,7 +11,11 @@ import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    // imports confif into root 
+    ConfigModule.forRoot({
+      // allows to explicitly define file path for env file
+      envFilePath: '.env'
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

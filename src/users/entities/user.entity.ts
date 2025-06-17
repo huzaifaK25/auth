@@ -21,5 +21,3 @@ export class User {
     @Column({nullable: true})
     occupation: string;
 }
-// @Column({nullable: true, name: 'my_occupation'})
-    // myOccupation: string;
