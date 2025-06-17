@@ -120,16 +120,19 @@ export class UsersService {
   }
 
   async updateUser(body: UpdateUserDto, req: any) {
-    try {
-      const id = req.user.username.id
-      const userUpdate = await this.usersRepository.update({id}, body)
-      console.log(userUpdate);
-      const user = await this.usersRepository.findOne({where: {id}})
-      const updatedUser = this.removePassword(user)
-      return {message: 'User updated:', updatedUser}
-    } catch (error) {
-      throw new HttpException('Cannot change email', HttpStatus.UNAUTHORIZED)
-    }
+    //const user = await this.usersRepository.findOne({where: {id}})
+    //await this.usersRepository.update(user, body)
+    //console.log(userUpdate);
+    //const updatedUser = this.removePassword(user)
+    console.log(body);
+    
+    const id = req.user.username.id
+    await this.usersRepository.update({id}, {
+      ...(body.name && { name: body.name}), // ...{ name: body.name } = name, ...(condition &&)  
+      ...(body.age && { age: body.age}),
+      ...(body.occupation && { occupation: body.occupation}),
+    })
+    return {message: 'User updated:'} 
   }
 
   async deleteUser(email: string) {

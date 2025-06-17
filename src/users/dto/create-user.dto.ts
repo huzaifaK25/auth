@@ -7,7 +7,7 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsEmail()
-    readonly email: string;
+    email: string;
 
     @IsNotEmpty()
     @IsString()
@@ -20,6 +20,4 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     occupation: string;
-
-    // myOccupation: string;
 }
