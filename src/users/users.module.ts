@@ -11,9 +11,9 @@ import { JwtStrategy } from 'src/auth/jwt.strategy';
   imports: [
     TypeOrmModule.forFeature([User]), 
     JwtModule.register({
-      secret: jwtConstants.secret,
+      secret: jwtConstants.secret, // secret key for JWT
       signOptions: {
-        expiresIn: '1d'
+        expiresIn: '1d' // expiry time fopr JWT
       }
     })
   ],

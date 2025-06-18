@@ -18,7 +18,7 @@ export class UsersController {
         return this.usersService.login(body.email, body.password)
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard) // Checks JWT here directly
     @Get('me')
     getProfile(@Req() req: Request) {
         return this.usersService.getProfile(req)

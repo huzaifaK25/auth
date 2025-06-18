@@ -3,20 +3,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '../src/auth/auth.module';
 import { UsersModule } from '../src/users/users.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    // imports confif into root 
+    // imports config module into root 
     ConfigModule.forRoot({
       // allows to explicitly define file path for env file
       envFilePath: '.env'
     }),
+    // database configuration
     TypeOrmModule.forRootAsync({
+      // uses config module for credentials and setup
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

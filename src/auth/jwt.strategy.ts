@@ -7,14 +7,13 @@ import { jwtConstants } from './constants';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: jwtConstants.secret,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // tells passport how to extract JWT (from header here)
+      ignoreExpiration: false, // tells passport to check expiration of JWT
+      secretOrKey: jwtConstants.secret, // secret key used to verify JWT is from our server
     });
   }
 
   async validate(payload: any) {
-    //console.log(payload)
     return { userId: payload.sub, username: payload.username };
   }
 }
