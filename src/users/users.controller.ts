@@ -3,10 +3,22 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateDoctorDto } from './dto/create-doctor.dto';
+import { CreatePatientDto } from './dto/create-patient.dto';
+import { Role } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
+
+    @Post('doctor/sign-up')
+    registerDoctor(@Body() body: CreateDoctorDto) {
+        return this.usersService.createDoctor(body)
+    }
+    @Post('patient/sign-up')
+    registerPatient(@Body() body: CreatePatientDto) {
+        return this.usersService.createPatient(body)
+    }
 
     @Post('sign-up')
     register(@Body() body: CreateUserDto) {
@@ -31,8 +43,8 @@ export class UsersController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    findWhere(@Query('occupation') occupation: string, @Query('age') age: number) {
-        return this.usersService.findWhere(occupation, age)
+    findWhere(@Query('role') role: Role) {
+        return this.usersService.findWhere(role)
     }
     
     @UseGuards(JwtAuthGuard)
@@ -46,5 +58,6 @@ export class UsersController {
     @Delete('delete') 
     deleteUser(@Body() body: {email: string}) {
         return this.usersService.deleteUser(body.email)
-    }
+    } 
+
 }

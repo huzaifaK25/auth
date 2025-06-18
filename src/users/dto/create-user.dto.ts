@@ -1,6 +1,13 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
+enum Role {
+    PATIENT = 'patient',
+    DOCTOR = 'doctor'
+}
+
+
 export class CreateUserDto {
+
     @IsNotEmpty()
     @IsString()
     name: string;
@@ -14,10 +21,6 @@ export class CreateUserDto {
     password: string;
 
     @IsNotEmpty()
-    @IsNumber()
-    age: number;
-
-    @IsNotEmpty()
     @IsString()
-    occupation: string;
+    role: Role;
 }
