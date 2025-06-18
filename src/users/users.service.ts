@@ -7,6 +7,7 @@ import { genSalt, hash } from 'bcryptjs';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { catchError, removePassword } from 'util/helper-functions';
 
 @Injectable()
 export class UsersService {
@@ -44,11 +45,8 @@ export class UsersService {
         return { message: 'Your account has beed created', user: userEntity };
         
       } catch (error) {
-        // Custom error definition standard
-        const customError = error as {message?: string, status?: number};
-        const message = customError?.message || 'Internal server error';
-        const status = customError?.status || 500;
-        throw new HttpException(message, status);
+        //custom error def
+        catchError(error);
       }
   }
 
@@ -73,10 +71,7 @@ export class UsersService {
       throw new HttpException('Password incorrect', HttpStatus.FORBIDDEN)
       
     } catch (error) {
-      const customError = error as {message?: string, status?: number};
-      const message = customError?.message || 'Internal server error';
-      const status = customError?.status || 500;
-      throw new HttpException(message, status);
+      catchError(error);
     }
       
   }
@@ -89,14 +84,11 @@ export class UsersService {
       if (!userExists) throw new HttpException('User not found', HttpStatus.NOT_FOUND)
 
       // removes password to display users data
-      const userData = this.removePassword(userExists)
+      const userData = removePassword(userExists)
       return {message:'Your profile:', user: userData}
       
     } catch (error) {
-      const customError = error as {message?: string, status?: number};
-      const message = customError?.message || 'Internal server error';
-      const status = customError?.status || 500;
-      throw new HttpException(message, status);
+      catchError(error);
     }
   }
    
@@ -106,14 +98,11 @@ export class UsersService {
   
       if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND)
   
-      const userData = this.removePassword(user);
+      const userData = removePassword(user);
       return {message: 'User found!', userData}
       
     } catch (error) {
-      const customError = error as {message?: string, status?: number};
-      const message = customError?.message || 'Internal server error';
-      const status = customError?.status || 500;
-      throw new HttpException(message, status);
+      catchError(error);
     }
   }
 
@@ -126,10 +115,7 @@ export class UsersService {
       throw new HttpException('Something went wrong', HttpStatus.BAD_REQUEST)
       
     } catch (error) {
-      const customError = error as {message?: string, status?: number};
-      const message = customError?.message || 'Internal server error';
-      const status = customError?.status || 500;
-      throw new HttpException(message, status);
+      catchError(error);
     }
   }
 
@@ -149,10 +135,7 @@ export class UsersService {
       throw new HttpException('Something went wrong', HttpStatus.BAD_REQUEST);
 
     } catch (error) {
-      const customError = error as { message?: string, status?: number };
-      const message = customError?.message || 'Internal server error';
-      const status = customError?.status || 500;
-      throw new HttpException(message, status);
+      catchError(error);
     }
     
   }
@@ -168,19 +151,7 @@ export class UsersService {
       return {message: `The user with email: ${email} has been successfully deleted`}    
       
     } catch (error) {
-      const customError = error as {message?: string, status?: number};
-      const message  = customError?.message || 'Internal server error'
-      const status = customError?.status || 500;
-      throw new HttpException(message, status);
+      catchError(error)
     }
-  }
-
-  // removes password to display data
-  removePassword(user: User | any) {
-    // const {name: userName, email: userEmail, age: userAge, occupation: userOccupation} = user
-    // const userData = {userName, userEmail, userAge, userOccupation}
-    // return userData
-    const {password, ...userData} = user;
-    return userData;
   }
 }

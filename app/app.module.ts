@@ -30,7 +30,7 @@ import { User } from 'src/users/entities/user.entity';
         synchronize: true
       })
     }),
-    AuthModule, UsersModule],
+    UsersModule],
   controllers: [AppController],
   providers: [AppService]
 })

@@ -4,19 +4,19 @@ import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 
 @Controller()
 export class AppController {
-  constructor(private authService: AuthService) {}
+  //constructor(private authService: AuthService) {}
 
-  @Post('auth/signup')
-  signUp(@Body() body: {}) {}
+  // @Post('auth/signup')
+  // signUp(@Body() body: {}) {}
 
-  @Post('auth/login')
-  async login(@Body() body: { username?: string, password?: string }) {
-    return this.authService.login(body?.username);
-  }
+  // @Post('auth/login')
+  // async login(@Body() body: { username?: string, password?: string }) {
+  //   return this.authService.login(body?.username);
+  // }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('profile')
+  // getProfile(@Request() req) {
+  //   return req.user;
+  // }
 }
