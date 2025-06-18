@@ -13,10 +13,11 @@ import { Doctor } from './entities/doctor.entity';
 import { Patient } from './entities/patient.entity';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { dot } from 'node:test/reporters';
+import { log } from 'node:console';
 
 @Injectable()
 export class UsersService {
-  
+
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
@@ -74,6 +75,53 @@ export class UsersService {
       
     } catch (error) {
       catchError(error)
+    }
+  }
+
+  async getDoctorProfile(id: number) {
+
+    // find
+    // result = User[]
+    // findOne
+    // result = User
+    // const user = await this.usersRepository.findOne({
+    //   where: { id }, 
+    //   relations: {
+    //     doctor_detail: true,
+    //     patient_detail: true
+    //   }
+    // })
+
+    //return {message: 'user found:', user}
+  }
+
+  async getDoctors(dto: { specialization?: string, yearsOfExp?: number, rating?: number }) {
+    try {
+      console.log({dto});
+      
+      // update conditions according to giving values
+      const users = await this.usersRepository.find({
+      where: {doctor_detail: {
+        ...(dto.rating && {rating: dto.rating}),
+        ...(dto.specialization && {specialization: dto.specialization}),
+        ...(dto.yearsOfExp && {yearsOfExp: dto.yearsOfExp})
+      }, role: Role.DOCTOR }, 
+      relations: {
+        doctor_detail: true,
+        //patient_detail: true
+      },
+      select: [
+        'id',
+        'name',
+        'created_at',
+        'updated_at',
+        'email',
+        'doctor_detail'
+      ]
+    })
+    return {message: 'user found', users}
+    } catch (error) {
+      // throw error here
     }
   }
 

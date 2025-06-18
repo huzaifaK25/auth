@@ -11,18 +11,29 @@ import { Role } from './entities/user.entity';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
+    @Post('sign-up')
+    register(@Body() body: CreateUserDto) {
+        return this.usersService.signUp(body)
+    }
+
     @Post('doctor/sign-up')
     registerDoctor(@Body() body: CreateDoctorDto) {
         return this.usersService.createDoctor(body)
     }
+
     @Post('patient/sign-up')
     registerPatient(@Body() body: CreatePatientDto) {
         return this.usersService.createPatient(body)
     }
 
-    @Post('sign-up')
-    register(@Body() body: CreateUserDto) {
-        return this.usersService.signUp(body)
+    @Get()
+    getDoctorProfile(@Query('id') id: number ) {
+        return this.usersService.getDoctorProfile(id)
+    }
+
+    @Get('doctor')
+    getDoctor(@Query() query: {specialization?: string, yearsOfExp?: number, rating?: number}) {
+        return this.usersService.getDoctors(query)
     }
 
     @Post('log-in')
