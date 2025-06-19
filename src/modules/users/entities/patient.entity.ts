@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
-import { Appointment } from "./appointment.entity";
+import { Appointment } from "../../appointments/entities/appointment.entity";
 
 
 @Entity('patient')

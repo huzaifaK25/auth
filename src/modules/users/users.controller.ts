@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { CreateDoctorDto } from '../dto/create-doctor.dto';
-import { CreatePatientDto } from '../dto/create-patient.dto';
-import { Role } from '../entities/user.entity';
+import { UpdateUserDto } from './dtos/update-user.dto';
+import { CreateDoctorDto } from './dtos/create-doctor.dto';
+import { CreatePatientDto } from './dtos/create-patient.dto';
+import { Role } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {

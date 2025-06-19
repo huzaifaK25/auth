@@ -1,17 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, User } from '../entities/user.entity';
+import { Role, User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
 import { genSalt, hash } from 'bcryptjs';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { catchError, removePassword } from 'util/helper-functions';
-import { CreateDoctorDto } from '../dto/create-doctor.dto';
-import { Doctor } from '../entities/doctor.entity';
-import { Patient } from '../entities/patient.entity';
-import { CreatePatientDto } from '../dto/create-patient.dto';
+import { CreateDoctorDto } from './dtos/create-doctor.dto';
+import { Doctor } from './entities/doctor.entity';
+import { Patient } from './entities/patient.entity';
+import { CreatePatientDto } from './dtos/create-patient.dto';
 
 @Injectable()
 export class UsersService {

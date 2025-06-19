@@ -1,11 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateApointmentDto } from 'src/dto/create-appointment.dto';
-import { Appointment } from 'src/entities/appointment.entity';
-import { Doctor } from 'src/entities/doctor.entity';
-import { UsersService } from 'src/users/users.service';
+import { CreateApointmentDto } from 'src/modules/appointments/dtos/create-appointment.dto';
+import { Appointment } from 'src/modules/appointments/entities/appointment.entity';
+import { UsersService } from 'src/modules/users/users.service';
 import { Repository } from 'typeorm';
-import { catchError } from '../../util/helper-functions'
+import { catchError } from '../../../util/helper-functions'
 
 @Injectable()
 export class AppointmentsService {

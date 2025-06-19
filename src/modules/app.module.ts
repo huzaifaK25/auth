@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from '../src/users/users.module';
+import { UsersModule } from '../modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppointmentsModule } from 'src/appointments/appointments.module';
-import { AppointmentsController } from 'src/appointments/appointments.controller';
-import { AppointmentsService } from 'src/appointments/appointments.service';
+import { AppointmentsModule } from 'src/modules/appointments/appointments.module';
 
 @Module({
   imports: [
@@ -33,7 +29,7 @@ import { AppointmentsService } from 'src/appointments/appointments.service';
       })
     }),
     UsersModule, AppointmentsModule],
-  controllers: [AppController],
-  providers: [AppService]
+  controllers: [],
+  providers: []
 })
 export class AppModule {}

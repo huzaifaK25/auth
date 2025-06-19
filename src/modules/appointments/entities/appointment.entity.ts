@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Doctor } from "./doctor.entity";
-import { Patient } from "./patient.entity";
+import { Doctor } from "../../users/entities/doctor.entity";
+import { Patient } from "../../users/entities/patient.entity";
 
 export enum Status {
     CONFIRMED = 'confirmed',
