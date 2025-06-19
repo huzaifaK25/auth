@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from '../src/auth/auth.module';
 import { UsersModule } from '../src/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { AppointmentsModule } from 'src/appointments/appointments.module';
+import { AppointmentsController } from 'src/appointments/appointments.controller';
+import { AppointmentsService } from 'src/appointments/appointments.service';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { User } from 'src/users/entities/user.entity';
         synchronize: true
       })
     }),
-    UsersModule],
+    UsersModule, AppointmentsModule],
   controllers: [AppController],
   providers: [AppService]
 })

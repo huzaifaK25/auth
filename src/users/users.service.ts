@@ -1,19 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, User } from './entities/user.entity';
+import { Role, User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { genSalt, hash } from 'bcryptjs';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { catchError, removePassword } from 'util/helper-functions';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
-import { Doctor } from './entities/doctor.entity';
-import { Patient } from './entities/patient.entity';
-import { CreatePatientDto } from './dto/create-patient.dto';
-import { dot } from 'node:test/reporters';
-import { log } from 'node:console';
+import { CreateDoctorDto } from '../dto/create-doctor.dto';
+import { Doctor } from '../entities/doctor.entity';
+import { Patient } from '../entities/patient.entity';
+import { CreatePatientDto } from '../dto/create-patient.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,7 +28,8 @@ export class UsersService {
 
   //**********************************API METHODS**********************************//
 
-  async createDoctor(dto: CreateDoctorDto) {
+  // Doctor Sign up
+  async signUpDoctor(dto: CreateDoctorDto) {
     try {
       const userExists = await this.usersRepository.findOne({where: {email: dto.email}})
       if (userExists) throw new HttpException('User already exists', HttpStatus.BAD_REQUEST)
@@ -56,7 +55,8 @@ export class UsersService {
     }
   }
 
-  async createPatient(dto: CreatePatientDto) {
+  //Patient Sign up
+  async signUpPatient(dto: CreatePatientDto) {
     try {
       const userExists = await this.usersRepository.findOne({where: {email: dto.email}})
       if (userExists) throw new HttpException('User already exists', HttpStatus.BAD_REQUEST)
@@ -78,54 +78,78 @@ export class UsersService {
     }
   }
 
-  async getDoctorProfile(id: number) {
-
-    // find
-    // result = User[]
-    // findOne
-    // result = User
-    // const user = await this.usersRepository.findOne({
-    //   where: { id }, 
-    //   relations: {
-    //     doctor_detail: true,
-    //     patient_detail: true
-    //   }
-    // })
-
-    //return {message: 'user found:', user}
-  }
-
+  // get doctor by details
   async getDoctors(dto: { specialization?: string, yearsOfExp?: number, rating?: number }) {
     try {
-      console.log({dto});
-      
       // update conditions according to giving values
       const users = await this.usersRepository.find({
-      where: {doctor_detail: {
-        ...(dto.rating && {rating: dto.rating}),
-        ...(dto.specialization && {specialization: dto.specialization}),
-        ...(dto.yearsOfExp && {yearsOfExp: dto.yearsOfExp})
-      }, role: Role.DOCTOR }, 
-      relations: {
-        doctor_detail: true,
-        //patient_detail: true
-      },
-      select: [
-        'id',
-        'name',
-        'created_at',
-        'updated_at',
-        'email',
-        'doctor_detail'
-      ]
-    })
-    return {message: 'user found', users}
+        //search query with where clause
+        where: {
+          doctor_detail: {
+          // if query has param then include else exclude
+          ...(dto.rating && {rating: dto.rating}),
+          ...(dto.yearsOfExp && {yearsOfExp: dto.yearsOfExp}),
+          ...(dto.specialization && {specialization: dto.specialization})
+          }, 
+          // only returns users which are also doctors
+          role: Role.DOCTOR 
+        }, 
+        // establishes JOIN relation as defined in entities
+        relations: {
+          doctor_detail: true,
+          //patient_detail: true
+        },
+        select: [
+          'id',
+          'email',
+          'name',
+          'role',
+          'created_at',
+          'updated_at',
+          'doctor_detail'
+        ]
+      })
+      if (users.length) return {message: 'users found:', users}
+      throw new HttpException('No user profiles match your query', HttpStatus.NOT_FOUND)
     } catch (error) {
       // throw error here
+      catchError(error)
     }
   }
 
-  // SIGN_UP METHOD
+  // get patient by details
+  async getPatient(dto: {contact_number?: number}) {
+    try {
+      const users = await this.usersRepository.find({
+        where: {
+          patient_detail: {
+            ...(dto.contact_number && {contact_number: dto.contact_number})
+          },
+          role: Role.PATIENT
+        },
+        relations: {
+          patient_detail: true,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true, 
+          role: true,
+          created_at: true, 
+          updated_at: true,
+          patient_detail: {
+            contact_number: true
+          }
+        }
+      })
+      if (users.length) return {message: 'users found:', users}
+      throw new HttpException('No profiles match your query', HttpStatus.NOT_FOUND)
+    } catch (error) {
+      catchError(error)
+    }
+  }
+
+  // User Sign up 
   async signUp(dto: CreateUserDto) {
     try {
       // Checking if user already exists
@@ -154,7 +178,7 @@ export class UsersService {
     }
   }
 
-  // LOG-IN METHOD
+  // User Log in (JWT)
   async login(email: string, password: string) {
     try {
       // check if user exisit already or not
@@ -227,7 +251,7 @@ export class UsersService {
       const result = await this.usersRepository.update({id}, {
         // {...(condition && { name: body.name })} = name if cond true 
         ...(body.name && { name: body.name}),
-        ...(body.password && { password: body.password}) 
+        ...(body.password && { password: body.password}), 
       })
       // checks if DB updated or not
       if (result.affected) return {message: 'User updated:'}
@@ -255,7 +279,7 @@ export class UsersService {
     }
   } 
 
-  //**********************************PRIVATE METHODS**********************************//
+  //**********************************HELPER METHODS**********************************//
 
   // creates a Doctor User Profile
   private async createDoctorProfile(dto: CreateDoctorDto, user: User) {
@@ -265,7 +289,7 @@ export class UsersService {
       rating: dto.rating,
       specialization: dto.specialization,
       yearsOfExp: dto.yearsOfExperience, 
-      user_id: user.id
+      user_id: user.id,
     }) 
     // Docter detail saved if user entity is also saved in db
     const doctorEntity = await this.doctorsRepository.save(doctorDetail)  
@@ -281,4 +305,11 @@ export class UsersService {
     const patientEntity = await this.patientsRepository.save(patientDetail)
     return patientEntity
   }
+
+  // to access users repo
+  getUsersRepo(){
+    return this.usersRepository
+  }
+
 }
+

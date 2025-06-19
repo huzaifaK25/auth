@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Doctor } from "./doctor.entity";
 import { Patient } from "./patient.entity";
 
@@ -34,9 +34,11 @@ export class User {
     @Column('timestamp', { nullable: true })
     deleted_at: Date | null;
 
+    // Each User is associated with one Doctor entity, and that Doctor points back to this user
     @OneToOne(() => Doctor, (doctor) => doctor.user)
     doctor_detail: Doctor;
     
+    // Each User is associated with one Patient entity, and that Patient points back to this user
     @OneToOne(() => Patient, (patient) => patient.user)
     patient_detail: Patient;
 } 

@@ -1,5 +1,5 @@
 import { HttpException } from "@nestjs/common";
-import { User } from "src/users/entities/user.entity";
+import { User } from "src/entities/user.entity";
 
 export function catchError(error: any) {
     // custom error def

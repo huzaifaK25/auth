@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
-import { CreatePatientDto } from './dto/create-patient.dto';
-import { Role } from './entities/user.entity';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateDoctorDto } from '../dto/create-doctor.dto';
+import { CreatePatientDto } from '../dto/create-patient.dto';
+import { Role } from '../entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -18,22 +18,22 @@ export class UsersController {
 
     @Post('doctor/sign-up')
     registerDoctor(@Body() body: CreateDoctorDto) {
-        return this.usersService.createDoctor(body)
+        return this.usersService.signUpDoctor(body)
     }
 
     @Post('patient/sign-up')
     registerPatient(@Body() body: CreatePatientDto) {
-        return this.usersService.createPatient(body)
-    }
-
-    @Get()
-    getDoctorProfile(@Query('id') id: number ) {
-        return this.usersService.getDoctorProfile(id)
+        return this.usersService.signUpPatient(body)
     }
 
     @Get('doctor')
     getDoctor(@Query() query: {specialization?: string, yearsOfExp?: number, rating?: number}) {
         return this.usersService.getDoctors(query)
+    }
+
+    @Get('patient')
+    getPatient(@Query() query: {contact_number?: number})  {
+        return this.usersService.getPatient(query)
     }
 
     @Post('log-in')
@@ -46,7 +46,7 @@ export class UsersController {
     getProfile(@Req() req: Request) {
         return this.usersService.getProfile(req)
     }
-    @UseGuards(JwtAuthGuard)
+    
     @Get(':id')
     findOne(@Param('id') param: {id: number}) {
         return this.usersService.findOne(param.id)
