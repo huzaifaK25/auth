@@ -27,6 +27,22 @@ export class UsersService {
 
   //**********************************API METHODS**********************************//
 
+  async getAllDoctors() {
+    try {
+      const doctors = await this.usersRepository.find({
+        where: { role: Role.DOCTOR },
+        relations: {
+          doctor_detail: true,
+        },
+      });
+      if (!doctors) throw new HttpException('No doctors', HttpStatus.NOT_FOUND);
+
+      return { message: 'list of doctors', doctors };
+    } catch (error) {
+      catchError(error);
+    }
+  }
+
   // Doctor Sign up
   async signUpDoctor(dto: CreateDoctorDto) {
     try {
@@ -49,7 +65,15 @@ export class UsersService {
       // User entity is saved in db
       await this.usersRepository.save(user);
       const doctor = await this.createDoctorProfile(dto, user);
-      return { message: 'Doctor profile has been created', user, doctor };
+
+      return {
+        message: 'Doctor profile has been created',
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        specialization: doctor.specialization,
+      };
+      // return { message: 'Doctor profile has been created', user, doctor };
     } catch (error) {
       catchError(error);
     }
@@ -81,21 +105,25 @@ export class UsersService {
   }
 
   // get doctor by details
-  async getDoctors(dto: { specialization?: string, yearsOfExp?: number, rating?: number }) {
+  async getDoctors(dto: {
+    specialization?: string;
+    yearsOfExp?: number;
+    rating?: number;
+  }) {
     try {
       // update conditions according to giving values
       const users = await this.usersRepository.find({
         //search query with where clause
         where: {
           doctor_detail: {
-          // if query has param then include else exclude
-          ...(dto.rating && {rating: dto.rating}),
-          ...(dto.yearsOfExp && {yearsOfExp: dto.yearsOfExp}),
-          ...(dto.specialization && {specialization: dto.specialization})
-          }, 
+            // if query has param then include else exclude
+            ...(dto.rating && { rating: dto.rating }),
+            ...(dto.yearsOfExp && { yearsOfExp: dto.yearsOfExp }),
+            ...(dto.specialization && { specialization: dto.specialization }),
+          },
           // only returns users which are also doctors
-          role: Role.DOCTOR 
-        }, 
+          role: Role.DOCTOR,
+        },
         // establishes JOIN relation as defined in entities
         relations: {
           doctor_detail: true,
@@ -108,26 +136,29 @@ export class UsersService {
           'role',
           'created_at',
           'updated_at',
-          'doctor_detail'
-        ]
-      })
-      if (users.length) return {message: 'users found:', users}
-      throw new HttpException('No user profiles match your query', HttpStatus.NOT_FOUND)
+          'doctor_detail',
+        ],
+      });
+      if (users.length) return { message: 'users found:', users };
+      throw new HttpException(
+        'No user profiles match your query',
+        HttpStatus.NOT_FOUND,
+      );
     } catch (error) {
       // throw error here
-      catchError(error)
+      catchError(error);
     }
   }
 
   // get patient by details
-  async getPatient(dto: {contact_number?: number}) {
+  async getPatient(dto: { contact_number?: number }) {
     try {
       const users = await this.usersRepository.find({
         where: {
           patient_detail: {
-            ...(dto.contact_number && {contact_number: dto.contact_number})
+            ...(dto.contact_number && { contact_number: dto.contact_number }),
           },
-          role: Role.PATIENT
+          role: Role.PATIENT,
         },
         relations: {
           patient_detail: true,
@@ -135,23 +166,26 @@ export class UsersService {
         select: {
           id: true,
           email: true,
-          name: true, 
+          name: true,
           role: true,
-          created_at: true, 
+          created_at: true,
           updated_at: true,
           patient_detail: {
-            contact_number: true
-          }
-        }
-      })
-      if (users.length) return {message: 'users found:', users}
-      throw new HttpException('No profiles match your query', HttpStatus.NOT_FOUND)
+            contact_number: true,
+          },
+        },
+      });
+      if (users.length) return { message: 'users found:', users };
+      throw new HttpException(
+        'No profiles match your query',
+        HttpStatus.NOT_FOUND,
+      );
     } catch (error) {
-      catchError(error)
+      catchError(error);
     }
   }
 
-  // User Sign up 
+  // User Sign up
   async signUp(dto: CreateUserDto) {
     try {
       // Checking if user already exists
@@ -256,12 +290,15 @@ export class UsersService {
 
   async updateUser(body: UpdateUserDto, req: any) {
     try {
-      const id = req.user.username.id
-      const result = await this.usersRepository.update({id}, {
-        // {...(condition && { name: body.name })} = name if cond true 
-        ...(body.name && { name: body.name}),
-        ...(body.password && { password: body.password}), 
-      })
+      const id = req.user.username.id;
+      const result = await this.usersRepository.update(
+        { id },
+        {
+          // {...(condition && { name: body.name })} = name if cond true
+          ...(body.name && { name: body.name }),
+          ...(body.password && { password: body.password }),
+        },
+      );
       // checks if DB updated or not
       if (result.affected) return { message: 'User updated:' };
 
@@ -295,16 +332,21 @@ export class UsersService {
 
   // creates a Doctor User Profile
   private async createDoctorProfile(dto: CreateDoctorDto, user: User) {
+    console.log('specialization: ', dto.specialization);
     // Doctor detail entity object created
     const doctorDetail = this.doctorsRepository.create({
       introduction: dto.introduction,
       rating: dto.rating,
       specialization: dto.specialization,
-      yearsOfExp: dto.yearsOfExperience, 
+      yearsOfExp: dto.yearsOfExperience,
       user_id: user.id,
-    }) 
+    });
+    console.log('Doctor detail before save');
     // Docter detail saved if user entity is also saved in db
     const doctorEntity = await this.doctorsRepository.save(doctorDetail);
+
+    console.log('Doctor detail after save');
+
     return doctorEntity;
   }
 
@@ -319,9 +361,7 @@ export class UsersService {
   }
 
   // to access users repo
-  getUsersRepo(){
-    return this.usersRepository
+  getUsersRepo() {
+    return this.usersRepository;
   }
-
 }
-
