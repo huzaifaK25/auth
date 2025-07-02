@@ -332,7 +332,6 @@ export class UsersService {
 
   // creates a Doctor User Profile
   private async createDoctorProfile(dto: CreateDoctorDto, user: User) {
-    console.log('specialization: ', dto.specialization);
     // Doctor detail entity object created
     const doctorDetail = this.doctorsRepository.create({
       introduction: dto.introduction,
@@ -341,11 +340,8 @@ export class UsersService {
       yearsOfExp: dto.yearsOfExperience,
       user_id: user.id,
     });
-    console.log('Doctor detail before save');
     // Docter detail saved if user entity is also saved in db
     const doctorEntity = await this.doctorsRepository.save(doctorDetail);
-
-    console.log('Doctor detail after save');
 
     return doctorEntity;
   }
