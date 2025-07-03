@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -71,8 +72,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') param: { id: number }) {
-    return this.usersService.findOne(param.id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)

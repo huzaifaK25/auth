@@ -250,6 +250,10 @@ export class UsersService {
 
       const userExists = await this.usersRepository.findOne({
         where: { email },
+        relations: {
+          doctor_detail: true,
+          patient_detail: true,
+        },
       });
       if (!userExists)
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -264,13 +268,19 @@ export class UsersService {
 
   async findOne(id: number) {
     try {
-      const user = await this.usersRepository.findOne({ where: { id } });
+      const user = await this.usersRepository.findOne({
+        where: { id },
+        relations: {
+          doctor_detail: true,
+          patient_detail: true,
+        },
+      });
 
       if (!user)
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
-      const userData = removePassword(user);
-      return { message: 'User found!', userData };
+      // const userData = removePassword(user);
+      return { message: 'User found!', user };
     } catch (error) {
       catchError(error);
     }
