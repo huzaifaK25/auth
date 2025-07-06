@@ -1,26 +1,24 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 enum Role {
-    PATIENT = 'patient',
-    DOCTOR = 'doctor'
+  PATIENT = 'patient',
+  DOCTOR = 'doctor',
 }
 
-
 export class CreateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
-    @IsNotEmpty()
-    @IsString()
-    name: string;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    email: string;
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 
-    @IsNotEmpty()
-    @IsString()
-    password: string;
-
-    @IsNotEmpty()
-    @IsString()
-    role: Role;
+  @IsNotEmpty()
+  @IsString()
+  role: Role;
 }

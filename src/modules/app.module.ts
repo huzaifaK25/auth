@@ -3,13 +3,14 @@ import { UsersModule } from '../modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppointmentsModule } from 'src/modules/appointments/appointments.module';
+import { SchedulesModule } from './schedules/schedules.module';
 
 @Module({
   imports: [
-    // imports config module into root 
+    // imports config module into root
     ConfigModule.forRoot({
       // allows to explicitly define file path for env file
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
     // database configuration
     TypeOrmModule.forRootAsync({
@@ -25,11 +26,14 @@ import { AppointmentsModule } from 'src/modules/appointments/appointments.module
         database: configService.get('DB_NAME'),
         //entities: [User],
         autoLoadEntities: true,
-        synchronize: true
-      })
+        synchronize: true,
+      }),
     }),
-    UsersModule, AppointmentsModule],
+    UsersModule,
+    AppointmentsModule,
+    SchedulesModule,
+  ],
   controllers: [],
-  providers: []
+  providers: [],
 })
 export class AppModule {}

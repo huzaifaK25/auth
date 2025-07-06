@@ -1,0 +1,35 @@
+import { Injectable } from '@nestjs/common';
+import { CreateScheduleDto } from './dto/create-schedule.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Schedule } from './entities/schedule.entity';
+import { Repository } from 'typeorm';
+import { catchError } from 'util/helper-functions';
+
+@Injectable()
+export class SchedulesService {
+  constructor(
+    @InjectRepository(Schedule)
+    private readonly schedulesRepository: Repository<Schedule>,
+  ) {}
+
+  getSchedule(id: number) {
+    throw new Error('Method not implemented.');
+  }
+
+  async createSchedule(doctor_id: number, dto: CreateScheduleDto) {
+    try {
+      const sched = this.schedulesRepository.create({
+        doctor_id: doctor_id,
+        sched_day: dto.sched_day,
+        time_from: dto.time_from,
+        time_to: dto.time_to,
+      });
+
+      const schedule = await this.schedulesRepository.save(sched);
+
+      return { message: 'Created Schedule:', schedule };
+    } catch (error) {
+      catchError(error);
+    }
+  }
+}
