@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Schedule } from './entities/schedule.entity';
@@ -19,7 +19,7 @@ export class SchedulesService {
   async createSchedule(doctor_id: number, dto: CreateScheduleDto) {
     try {
       const sched = this.schedulesRepository.create({
-        doctor_id: doctor_id,
+        doctor_id,
         sched_day: dto.sched_day,
         time_from: dto.time_from,
         time_to: dto.time_to,
@@ -27,7 +27,8 @@ export class SchedulesService {
 
       const schedule = await this.schedulesRepository.save(sched);
 
-      return { message: 'Created Schedule:', schedule };
+      if (schedule) return { message: 'Created Schedule:', schedule };
+      throw new HttpException('Something went wrong', HttpStatus.BAD_REQUEST);
     } catch (error) {
       catchError(error);
     }
