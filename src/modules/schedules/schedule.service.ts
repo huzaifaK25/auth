@@ -12,8 +12,18 @@ export class SchedulesService {
     private readonly schedulesRepository: Repository<Schedule>,
   ) {}
 
-  getSchedule(id: number) {
-    throw new Error('Method not implemented.');
+  async getSchedule(doctor_id: number) {
+    try {
+      const schedule = await this.schedulesRepository.find({
+        where: {
+          doctor_id,
+        },
+      });
+
+      if (schedule) return { message: 'Schedule:', schedule };
+    } catch (error) {
+      catchError(error);
+    }
   }
 
   async createSchedule(doctor_id: number, dto: CreateScheduleDto) {

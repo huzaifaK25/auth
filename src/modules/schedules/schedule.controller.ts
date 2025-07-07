@@ -19,8 +19,7 @@ export class SchedulesController {
   }
 
   // TODO: add auth guard
-  // takes doctor id input and returns schedule
-  @Get(':id')
+  @Get('get')
   getSchedule(@Query('id', ParseIntPipe) id: number) {
     return this.schedulesService.getSchedule(id);
   }
