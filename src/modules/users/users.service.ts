@@ -234,8 +234,9 @@ export class UsersService {
           username: userExists,
           sub: Math.floor(Math.random() * 10000),
         };
+        const user = userExists;
         const access_token = await this.jwtService.signAsync(payload);
-        return { message: 'Logged in successfully', access_token };
+        return { message: 'Logged in successfully', user, access_token };
       }
       // login failed response if password incorrect
       throw new HttpException('Password incorrect', HttpStatus.FORBIDDEN);
