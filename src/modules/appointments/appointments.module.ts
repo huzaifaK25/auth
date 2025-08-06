@@ -10,10 +10,8 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Appointment, User, Doctor, Patient])
-  ],
+  imports: [TypeOrmModule.forFeature([Appointment, User, Doctor, Patient])],
   controllers: [AppointmentsController],
-  providers: [AppointmentsService, UsersService, JwtService]
+  providers: [AppointmentsService, UsersService, JwtService],
 })
 export class AppointmentsModule {}
